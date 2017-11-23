@@ -40,7 +40,7 @@ def move(entities, direction):
     elif direction == "z":
         dir = sjvz[3]
     else:
-        print("Invalid move")
+        raise ValueError("This direction does not exist")
 
     entity = (last[0] + dir[0], last[1] + dir[1])
 
@@ -53,12 +53,19 @@ def move(entities, direction):
     else:
         entities.append(entity)
         entities.pop(0)
+    return 
 
-    return entities
+def run():
+    entities = [(0,0)]
 
-entities = [(0,0)]
-drawLvl(entities)
-entities = move(entities, "z")
-drawLvl(entities)
-entities = move(entities, "j")
-drawLvl(entities)
+    drawLvl(entities)
+    dir = ""
+    
+    try:
+        dir = input("Zadej smer pohybu")
+    except RuntimeError:
+        print("Unexpected Exception!")
+
+    move(entities, dir)
+    return
+
