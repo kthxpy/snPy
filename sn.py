@@ -28,7 +28,7 @@ def isOccupied(entities, x, y):
 def move(entities, direction):
     width = 5
     height = 5
-    sjvz = [(0,-1), (0,1), (-1, 0), (1, 0)]
+    sjvz = [(0,-1), (0,1), (1, 0), (-1, 0)]
     last = entities[len(entities)-1]
     dir = ()
     if direction == "s":
@@ -53,19 +53,18 @@ def move(entities, direction):
     else:
         entities.append(entity)
         entities.pop(0)
-    return 
-
-def run():
-    entities = [(0,0)]
-
-    drawLvl(entities)
-    dir = ""
-    
-    try:
-        dir = input("Zadej smer pohybu")
-    except RuntimeError:
-        print("Unexpected Exception!")
-
-    move(entities, dir)
     return
 
+def run():
+    end = False
+    while not end:
+        entities = [(0,0)]
+        drawLvl(entities)
+        dir = ""
+        try:
+            dir = input("Zadej smer pohybu")
+        except RuntimeError:
+            print("Unexpected Exception!")
+        move(entities, dir)
+        print(entities)
+    return
