@@ -57,8 +57,8 @@ def move(entities, direction):
 
 def run():
     end = False
+    entities = [(0,0), (0,1)]
     while not end:
-        entities = [(0,0)]
         drawLvl(entities)
         dir = ""
         try:
@@ -68,3 +68,5 @@ def run():
         move(entities, dir)
         print(entities)
     return
+
+run()
