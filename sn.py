@@ -19,7 +19,7 @@ def drawLvl(entities):
         print("")
     return
 
-def isOccupied(entities, x, y)
+def isOccupied(entities, x, y):
     for entity in entities:
         if entity[0] == x and entity[1] == y:
             return True
@@ -28,7 +28,7 @@ def isOccupied(entities, x, y)
 def move(entities, direction):
     width = 5
     height = 5
-    sjvz = [(0,-1), (0,1), (-1, 0), (1, 0)] 
+    sjvz = [(0,-1), (0,1), (-1, 0), (1, 0)]
     last = entities[len(entities)-1]
     dir = ()
     if direction == "s":
@@ -53,7 +53,7 @@ def move(entities, direction):
     else:
         entities.append(entity)
         entities.pop(0)
-    
+
     return entities
 
 entities = [(0,0)]
