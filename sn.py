@@ -20,7 +20,6 @@ def drawLvl(entities):
     return
 
 def isOccupied(entities, x, y)
-
     for entity in entities:
         if entity[0] == x and entity[1] == y:
             return True
@@ -44,8 +43,16 @@ def move(entities, direction):
         print("Invalid move")
 
     entity = (last[0] + dir[0], last[1] + dir[1])
-    entities.append(entity)
-    entities.pop(0)
+
+    if entity[0] < 0 or entity[1] >= width:
+        raise ValueError("Game Over")
+    elif entity[1] < 0 or entity[1] >= height:
+        raise ValueError("Game Over")
+    elif isOccupied(entities, entity[0], entity[1]):
+        raise ValueError("Game Over")
+    else:
+        entities.append(entity)
+        entities.pop(0)
     
     return entities
 
