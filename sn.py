@@ -28,7 +28,7 @@ def isOccupied(entities, x, y):
 def move(entities, direction):
     width = 5
     height = 5
-    sjvz = [(0,-1), (0,1), (1, 0), (-1, 0)]
+    sjvz = [(0,-1), (0,1), (-1, 0), (1, 0)]
     last = entities[len(entities)-1]
     dir = ()
     if direction == "s":
@@ -69,4 +69,4 @@ def run():
         print(entities)
     return
 
-run()
+#run()
