@@ -1,4 +1,4 @@
-def drawLvl(entities, levelData):
+def drawLvl(levelData):
     width = levelData["width"]
     height = levelData["height"]
     level = []
@@ -8,7 +8,7 @@ def drawLvl(entities, levelData):
             row.append(".")
         level.append(row)
 
-    for entity in entities["body"]:
+    for entity in levelData["body"]:
         x = entity[0]
         y = entity[1]
         level[y][x] = "X"
@@ -25,12 +25,12 @@ def isOccupied(listOfEntities, x, y):
             return True
     return False
 
-def move(entities, levelData, direction):
+def move(levelData, direction):
     width = levelData["width"]
     height = levelData["height"]
     sjvz = [(0,-1), (0,1), (-1, 0), (1, 0)]
-    count = len(entities["body"])
-    last = entities["body"][count -1]
+    count = len(levelData["body"])
+    last = levelData["body"][count -1]
     dir = ()
     if direction == "s":
         dir = sjvz[0]
@@ -49,32 +49,28 @@ def move(entities, levelData, direction):
         raise ValueError("Game Over")
     elif entity[1] < 0 or entity[1] >= height:
         raise ValueError("Game Over")
-    elif isOccupied(entities, entity[0], entity[1]):
+    elif isOccupied(levelData["body"], entity[0], entity[1]):
         raise ValueError("Game Over")
     else:
-        entities["body"].append(entity)
-        entities["body"].pop(0)
+        levelData["body"].append(entity)
+        levelData["body"].pop(0)
     return
 
 def run():
     end = False
-    entities =  {
-                    "body" : [(0, 0), (1, 0), (2, 0)],
-                    "food" : [2, 1],
-                }
+
     levelData = {
                     "width"  : 10,
                     "height" : 10,
+                    "body" : [(0, 0), (1, 0), (2, 0)],
+                    "food" : [2, 1],
                 }
     while not end:
-        drawLvl(entities)
+        drawLvl(levelData)
         dir = ""
         try:
             dir = input("Zadej smer pohybu")
         except RuntimeError:
             print("Unexpected Exception!")
-        move(entities, levelData, dir)
-        print(entities)
+        move(levelData, dir)
     return
-
-#run()
