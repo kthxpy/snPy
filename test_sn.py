@@ -1,4 +1,4 @@
-from sn import isOccupied, move
+from sn import isOccupied, move, genFood
 
 def test_isOccupied_Positive():
     listOfEntities = [(0,0), (1,0), (2,0)]
@@ -18,7 +18,7 @@ def test_move_succes():
                     "width"  : 5,
                     "height" : 5,
                     "body"   : [(0, 0), (1, 0), (2, 0)],
-                    "food"   : [(2, 1)],
+                    "food"   : [],
                 }
     directions = [ "j", "j", "z", "z", "s", "v"]
     states = [
@@ -47,3 +47,25 @@ def test_move_invalid_direction():
     except ValueError:
         error = True
     assert error == True
+
+def test_genFood_all():
+    levelData = {
+                    "width"     : 5,
+                    "height"    : 5,
+                    "body"  : [(0, 0), (1, 0), (2, 0)],
+                    "food"  : [],
+                }
+    genFood(levelData, 3)
+
+    assert len(levelData["food"]) == 3
+
+def test_genFood_not_enough_room():
+    levelData = {
+                    "width"     : 4,
+                    "height"    : 2,
+                    "body"  : [(0, 0), (1, 0), (2, 0), (3,0), (3, 1), (2, 1), (1, 1)],
+                    "food"  : [],
+                }
+    genFood(levelData, 3)
+
+    assert len(levelData["food"]) == 1
