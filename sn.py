@@ -1,6 +1,6 @@
-def drawLvl(entities):
-    width = 5
-    height = 5
+def drawLvl(entities, levelData):
+    width = levelData["width"]
+    height = levelData["height"]
     level = []
     for i in range(height):
         row = []
@@ -25,9 +25,9 @@ def isOccupied(entities, x, y):
             return True
     return False
 
-def move(entities, direction):
-    width = 5
-    height = 5
+def move(entities, levelData, direction):
+    width = levelData["width"]
+    height = levelData["height"]
     sjvz = [(0,-1), (0,1), (-1, 0), (1, 0)]
     last = entities[len(entities)-1]
     dir = ()
@@ -58,6 +58,10 @@ def move(entities, direction):
 def run():
     end = False
     entities = [(0, 0), (1, 0), (2, 0)]
+    levelData = {
+                    "width"     : 10,
+                    "height"    : 10,
+                }
     while not end:
         drawLvl(entities)
         dir = ""
@@ -65,7 +69,7 @@ def run():
             dir = input("Zadej smer pohybu")
         except RuntimeError:
             print("Unexpected Exception!")
-        move(entities, dir)
+        move(entities, levelData, dir)
         print(entities)
     return
 
