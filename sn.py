@@ -8,7 +8,7 @@ def drawLvl(entities, levelData):
             row.append(".")
         level.append(row)
 
-    for entity in entities:
+    for entity in entities["body"]:
         x = entity[0]
         y = entity[1]
         level[y][x] = "X"
@@ -19,8 +19,8 @@ def drawLvl(entities, levelData):
         print("")
     return
 
-def isOccupied(entities, x, y):
-    for entity in entities:
+def isOccupied(listOfEntities, x, y):
+    for entity in listOfEntities:
         if entity[0] == x and entity[1] == y:
             return True
     return False
@@ -29,7 +29,8 @@ def move(entities, levelData, direction):
     width = levelData["width"]
     height = levelData["height"]
     sjvz = [(0,-1), (0,1), (-1, 0), (1, 0)]
-    last = entities[len(entities)-1]
+    count = len(entities["body"])
+    last = entities["body"][count -1]
     dir = ()
     if direction == "s":
         dir = sjvz[0]
@@ -51,16 +52,19 @@ def move(entities, levelData, direction):
     elif isOccupied(entities, entity[0], entity[1]):
         raise ValueError("Game Over")
     else:
-        entities.append(entity)
-        entities.pop(0)
+        entities["body"].append(entity)
+        entities["body"].pop(0)
     return
 
 def run():
     end = False
-    entities = [(0, 0), (1, 0), (2, 0)]
+    entities =  {
+                    "body" : [(0, 0), (1, 0), (2, 0)],
+                    "food" : [2, 1],
+                }
     levelData = {
-                    "width"     : 10,
-                    "height"    : 10,
+                    "width"  : 10,
+                    "height" : 10,
                 }
     while not end:
         drawLvl(entities)
