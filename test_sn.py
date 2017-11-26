@@ -1,4 +1,4 @@
-from sn import isOccupied
+from sn import isOccupied, move
 
 def test_isOccupied_Positive():
     entities = [(0,0), (1,0), (2,0)]
@@ -12,12 +12,29 @@ def test_isOccupied_Negative():
     result = isOccupied(entities, x, y)
     assert result == False
 
+def test_move_succes_():
+    entities = [(0,0), (1,0), (2,0)]
+    results = []
+    directions = [ "j", "j", "z", "z", "s", "v"]
+    states = [
+                [(1,0), (2,0), (2,1)],
+                [(2,0), (2,1), (2,2)],
+                [(2,1), (2,2), (3,2)],
+                [(2,2), (3,2), (4,2)],
+                [(3,2), (4,2), (4,1)],
+                [(4,2), (4,1), (3,1)]
+             ]
+    for i in range(len(states)):
+        move(entities, directions[i])
+        results.append(entities == states[i] )
+    assert results == [True, True, True, True, True, True]
+
 def test_move_invalid_direction():
-    entities = [(0,0), (1,0)]
+    entities = [(0,0), (1,0), (2,0)]
 
     error = False
     try:
         move(entities, "f")
     except ValueError:
         error = True
-    assert error == True 
+    assert error == True
