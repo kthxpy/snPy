@@ -59,8 +59,8 @@ def move(levelData, direction):
         raise ValueError("Game Over")
     elif isOccupied(levelData["body"], entity[0], entity[1]):
         occupiedSpace = len(levelData["body"]) + len(levelData["food"])
-        freePlace =  (occupiedSpace < levelSize)
-        if not freePlace:
+        freeSpace =  (occupiedSpace < levelSize)
+        if not freeSpace:
             raise ValueError("You Win!")
         else:
             raise ValueError("Game Over")
@@ -74,21 +74,20 @@ def move(levelData, direction):
 
 def genFood(levelData, amount):
     levelSize = levelData["width"] * levelData["height"]
-    freePlace = len(levelData["body"]) + len(levelData["food"]) < levelSize
+    occupiedSpace = len(levelData["body"]) + len(levelData["food"])
+    freeSpace = levelSize - occupiedSpace
 
-    while freePlace and amount > 0:
+    while freeSpace and amount:
         randX = randrange(0, levelData["width"])
         randY = randrange(0, levelData["height"])
-        f = (randX, randY)
 
-        freeBody = not isOccupied(levelData["body"], randX, randY)
-        freeFood = not isOccupied(levelData["food"], randX, randY)
+        bite = (randX, randY)
 
-        if freeBody and freeFood:
-            levelData["food"].append((randX, randY))
+        if bite not in levelData["body"] and bite not in levelData["food"]:
+            levelData["food"].append(bite)
             amount -= 1
+            freeSpace -=1
     return
-
 
 def run():
     end = False
@@ -119,3 +118,5 @@ def run():
         moves += 1
         print("Moves added: ",  moves)
     return
+
+#run()
