@@ -1,3 +1,5 @@
+from random import randrange
+
 def drawLvl(levelData):
     width = levelData["width"]
     height = levelData["height"]
@@ -12,6 +14,11 @@ def drawLvl(levelData):
         x = entity[0]
         y = entity[1]
         level[y][x] = "X"
+
+    for entity in levelData["food"]:
+        x = entity[0]
+        y = entity[1]
+        level[y][x] = "?"
 
     for row in level:
         for character in row:
@@ -32,6 +39,7 @@ def move(levelData, direction):
     count = len(levelData["body"])
     last = levelData["body"][count -1]
     dir = ()
+
     if direction == "s":
         dir = sjvz[0]
     elif direction == "j":
@@ -50,22 +58,57 @@ def move(levelData, direction):
     elif entity[1] < 0 or entity[1] >= height:
         raise ValueError("Game Over")
     elif isOccupied(levelData["body"], entity[0], entity[1]):
-        raise ValueError("Game Over")
+        occupiedSpace = len(levelData["body"]) + len(levelData["food"])
+        freePlace =  (occupiedSpace < levelSize)
+        if not freePlace:
+            raise ValueError("You Win!")
+        else:
+            raise ValueError("Game Over")
     else:
         levelData["body"].append(entity)
-        levelData["body"].pop(0)
+        if isOccupied(levelData["food"], entity[0], entity[1]):
+            levelData["food"].pop(0)
+        else:
+            levelData["body"].pop(0)
     return
+
+def genFood(levelData, amount):
+    levelSize = levelData["width"] * levelData["height"]
+    freePlace = len(levelData["body"]) + len(levelData["food"]) < levelSize
+
+    while freePlace and amount > 0:
+        randX = randrange(0, levelData["width"])
+        randY = randrange(0, levelData["height"])
+        f = (randX, randY)
+
+        freeBody = not isOccupied(levelData["body"], randX, randY)
+        freeFood = not isOccupied(levelData["food"], randX, randY)
+
+        if freeBody and freeFood:
+            levelData["food"].append((randX, randY))
+            amount -= 1
+    return
+
 
 def run():
     end = False
-
+    moves = 0
+    fRefresh = 5
+    fAmount = 1
     levelData = {
                     "width"  : 10,
                     "height" : 10,
                     "body" : [(0, 0), (1, 0), (2, 0)],
-                    "food" : [2, 1],
+                    "food" : [(0,2)],
                 }
     while not end:
+        if moves > fRefresh:
+            if levelData["food"]:
+                for i in range(fAmount):
+                    levelData["food"].pop(i)
+            genFood(levelData, fAmount)
+            moves = 0
+            print("Moves reset to: ",  moves)
         drawLvl(levelData)
         dir = ""
         try:
@@ -73,4 +116,6 @@ def run():
         except RuntimeError:
             print("Unexpected Exception!")
         move(levelData, dir)
+        moves += 1
+        print("Moves added: ",  moves)
     return
