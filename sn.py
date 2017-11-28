@@ -53,9 +53,9 @@ def move(levelData, direction):
 
     entity = (last[0] + dir[0], last[1] + dir[1])
 
-    if entity[0] < 0 or entity[1] >= width:
+    if entity[0] not in range(0, width):
         raise ValueError("Game Over")
-    elif entity[1] < 0 or entity[1] >= height:
+    elif entity[1] not in range (0, height):
         raise ValueError("Game Over")
     elif isOccupied(levelData["body"], entity[0], entity[1]):
         occupiedSpace = len(levelData["body"]) + len(levelData["food"])
@@ -89,25 +89,32 @@ def genFood(levelData, amount):
             freeSpace -=1
     return
 
+def lvlTick(levelData):
+    if levelData["moves"] > levelData["fRefresh"]:
+            if levelData["food"]:
+                for i in range(levelData["fAmount"]):
+                    levelData["food"].pop(i)
+            genFood(levelData, levelData["fAmount"])
+            levelData["moves"] = 0
+    return
+
 def run():
     end = False
     moves = 0
     fRefresh = 5
     fAmount = 1
     levelData = {
-                    "width"  : 10,
-                    "height" : 10,
-                    "body" : [(0, 0), (1, 0), (2, 0)],
-                    "food" : [(0,2)],
+                    "width"     : 10,
+                    "height"    : 10,
+                    "body"      : [(0, 0), (1, 0), (2, 0)],
+                    "food"      : [(0,2)],
+                    "direction" : "z",
+                    "moves"     : 0,
+                    "fRefresh"  : 5,
+                    "fAmount"   : 1,
                 }
     while not end:
-        if moves > fRefresh:
-            if levelData["food"]:
-                for i in range(fAmount):
-                    levelData["food"].pop(i)
-            genFood(levelData, fAmount)
-            moves = 0
-            print("Moves reset to: ",  moves)
+        lvlTick(levelData)
         drawLvl(levelData)
         dir = ""
         try:
@@ -115,8 +122,8 @@ def run():
         except RuntimeError:
             print("Unexpected Exception!")
         move(levelData, dir)
-        moves += 1
-        print("Moves added: ",  moves)
+        levelData["moves"] += 1
+        levelData["direction"] = dir
     return
 
-#run()
+run()
