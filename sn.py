@@ -53,31 +53,27 @@ def move(levelData, direction):
 
     entity = (last[0] + dir[0], last[1] + dir[1])
 
-    if entity[0] not in range(0, width):
-        raise ValueError("Game Over")
-    elif entity[1] not in range (0, height):
+    if  0 < entity[0] < width  or 0 < entity[1] < height:
         raise ValueError("Game Over")
     elif isOccupied(levelData["body"], entity[0], entity[1]):
-        occupiedSpace = len(levelData["body"]) + len(levelData["food"])
-        freeSpace =  (occupiedSpace < levelSize)
-        if not freeSpace:
-            raise ValueError("You Win!")
-        else:
-            raise ValueError("Game Over")
+        raise ValueError("Game Over")
+    elif isOccupied(levelData["food"], entity[0], entity[1]):
+        levelData["body"].append(entity)
+        levelData["food"].pop(0)
     else:
         levelData["body"].append(entity)
-        if isOccupied(levelData["food"], entity[0], entity[1]):
-            levelData["food"].pop(0)
-        else:
-            levelData["body"].pop(0)
+        levelData["body"].pop(0)
     return
 
-def genFood(levelData, amount):
+def freeSpace(levelData):
     levelSize = levelData["width"] * levelData["height"]
     occupiedSpace = len(levelData["body"]) + len(levelData["food"])
-    freeSpace = levelSize - occupiedSpace
+    free = levelSize - occupiedSpace
+    return free
 
-    while freeSpace and amount:
+def genFood(levelData, amount):
+
+    while freeSpace(levelData) and amount:
         randX = randrange(0, levelData["width"])
         randY = randrange(0, levelData["height"])
 
@@ -86,7 +82,6 @@ def genFood(levelData, amount):
         if bite not in levelData["body"] and bite not in levelData["food"]:
             levelData["food"].append(bite)
             amount -= 1
-            freeSpace -=1
     return
 
 def lvlTick(levelData):
