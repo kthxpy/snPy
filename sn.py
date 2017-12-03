@@ -53,7 +53,7 @@ def move(levelData, direction):
 
     entity = (last[0] + dir[0], last[1] + dir[1])
 
-    if  0 < entity[0] < width  or 0 < entity[1] < height:
+    if  not (0 < entity[0] < width  or 0 < entity[1] < height):
         raise ValueError("Game Over")
     elif isOccupied(levelData["body"], entity[0], entity[1]):
         raise ValueError("Game Over")
