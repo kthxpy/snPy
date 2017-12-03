@@ -15,11 +15,11 @@ def test_isOccupied_Negative():
 def test_move_succes():
     results = []
     levelData = {
-        "width"  : 5,
-        "height" : 5,
-        "body"   : [(0, 0), (1, 0), (2, 0)],
-        "food"   : [],
-    }
+                    "width"  : 5,
+                    "height" : 5,
+                    "body"   : [(0, 0), (1, 0), (2, 0)],
+                    "food"   : [],
+                }
     directions = ["j", "j", "z", "z", "s", "v"]
     states = [
         [(1, 0), (2, 0), (2, 1)],
