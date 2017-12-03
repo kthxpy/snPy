@@ -1,9 +1,17 @@
+import os
 from random import randrange
+from msvcrt import getch, kbhit
+
+### CONSOLE SPECIFIC FUNCTIONS ###
 
 def drawLvl(levelData):
     width = levelData["width"]
     height = levelData["height"]
     level = []
+    levelStr = ""
+    xOff = 20
+    yOff = 10
+
     for i in range(height):
         row = []
         for j in range(width):
@@ -20,12 +28,44 @@ def drawLvl(levelData):
         y = entity[1]
         level[y][x] = "?"
 
+    print(yOff * "\n", end="")
     for row in level:
+        print(xOff * " ",  end="")
         for character in row:
             print(character, " ", end="")
         print("")
     return
 
+def clear():
+    os.system('cls' if os.name=='nt' else 'clear')
+
+def keyDown():
+    while True:
+        ch = ord(getch())
+        if ch == 0 or ch == 224:
+            ch = ord(getch())
+        return ch
+
+def onKeyDown(key, levelData):
+    
+    if key == levelData["keys"]["left"]:
+        levelData["direction"] = "v"
+    elif key == levelData["keys"]["up"]:
+        levelData["direction"] = "s"
+    elif key == levelData["keys"]["right"]:
+        levelData["direction"] = "z"
+    elif key == levelData["keys"]["down"]:
+        levelData["direction"] = "j"
+    return
+    
+def onLevelChange(levelData):
+    clear()
+    drawLvl(levelData)
+    return
+
+
+### GAMELOGIC FUNCTIONS ###
+ 
 def isOccupied(listOfEntities, x, y):
     for entity in listOfEntities:
         if entity[0] == x and entity[1] == y:
@@ -82,6 +122,8 @@ def genFood(levelData, amount):
         if bite not in levelData["body"] and bite not in levelData["food"]:
             levelData["food"].append(bite)
             amount -= 1
+    onLevelChange(levelData) 
+
     return
 
 def lvlTick(levelData):
@@ -93,11 +135,9 @@ def lvlTick(levelData):
             levelData["moves"] = 0
     return
 
+    
 def run():
     end = False
-    moves = 0
-    fRefresh = 5
-    fAmount = 1
     levelData = {
                     "width"     : 10,
                     "height"    : 10,
@@ -105,20 +145,33 @@ def run():
                     "food"      : [(0,2)],
                     "direction" : "z",
                     "moves"     : 0,
-                    "fRefresh"  : 5,
+                    "fRefresh"  : 30,
                     "fAmount"   : 1,
+                    "keys"      : {"esc" : 27, "enter" : 13, "left" : 75, "up": 72, "right": 77, "down": 80},
+                    "fLimit"    : 15000,
+                    "fTicks"    : 0,
                 }
-    while not end:
-        lvlTick(levelData)
-        drawLvl(levelData)
-        dir = ""
-        try:
-            dir = input("Zadej smer pohybu")
-        except RuntimeError:
-            print("Unexpected Exception!")
-        move(levelData, dir)
-        levelData["moves"] += 1
-        levelData["direction"] = dir
-    return
 
+    while not end:
+        if kbhit():
+            k = keyDown()
+            onKeyDown(k,levelData)    
+        lvlTick(levelData)
+        if levelData["fTicks"] > levelData["fLimit"]:
+            move(levelData, levelData["direction"])
+            levelData["moves"] += 1
+            levelData["fTicks"] = 0
+            onLevelChange(levelData)       
+        levelData["fTicks"] +=1
+    return
+    
 run()
+
+
+
+
+
+
+
+
+
