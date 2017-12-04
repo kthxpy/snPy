@@ -48,6 +48,21 @@ def test_move_invalid_direction():
         error = True
     assert error == True
 
+def test_move_invalid_index():
+    levelData = {
+                    "width"     : 5,
+                    "height"    : 5,
+                    "body"  : [(0, 0), (1, 0), (2, 0)],
+                    "food"  : [(2, 1)],
+                }
+    error = False
+    try:
+        move(levelData, "s")
+    except ValueError:
+        error = True
+    assert error == True
+
+
 def test_genFood_all():
     levelData = {
                     "width"     : 5,
