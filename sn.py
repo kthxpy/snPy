@@ -93,9 +93,11 @@ def move(levelData, direction):
 
     entity = (last[0] + dir[0], last[1] + dir[1])
 
-    if  not (0 < entity[0] < width  or 0 < entity[1] < height):
+    if  not (0 <= entity[0] < width  and 0 <= entity[1] < height):
+        print("Entity out of bounds: ", entity)
         raise ValueError("Game Over")
     elif isOccupied(levelData["body"], entity[0], entity[1]):
+        print("Position occupied: ", entity)
         raise ValueError("Game Over")
     elif isOccupied(levelData["food"], entity[0], entity[1]):
         levelData["body"].append(entity)
