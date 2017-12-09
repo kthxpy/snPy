@@ -1,4 +1,4 @@
-from sn import isOccupied, move, genFood
+from sn import isOccupied, changeDir, move, genFood
 
 def test_isOccupied_Positive():
     listOfEntities = [(0, 0), (1, 0), (2, 0)]
@@ -14,61 +14,117 @@ def test_isOccupied_Negative():
 
 def test_move_succes():
     results = []
-    levelData = {
-                    "width"  : 5,
-                    "height" : 5,
+    data = []
+    data.append({
+                    "width"  : 3,
+                    "height" : 3,
                     "body"   : [(0, 0), (1, 0), (2, 0)],
                     "food"   : [],
-                }
-    directions = ["j", "j", "z", "z", "s", "v"]
+                    "directions" : {
+                                    "s" : (0, -1),
+                                    "j" : (0,  1),
+                                    "z" : (1, 0),
+                                    "v" : (-1,  0),
+                                    },
+                    "direction" : "j",
+                })
     states = [
-        [(1, 0), (2, 0), (2, 1)],
-        [(2, 0), (2, 1), (2, 2)],
-        [(2, 1), (2, 2), (3, 2)],
-        [(2, 2), (3, 2), (4, 2)],
-        [(3, 2), (4, 2), (4, 1)],
-        [(4, 2), (4, 1), (3, 1)]
-    ]
-    for i in range(len(states)):
-        move(levelData, directions[i])
-        results.append(levelData["body"] == states[i] )
-    assert results == [True, True, True, True, True, True]
+                [(1, 0), (2, 0), (2, 1)],
+            ]
+    for i in range(len(data)):
+        move(data[i])
+        results.append(data[i]["body"] == states[i])
+    assert results == [True]
 
-def test_move_invalid_direction():
+def test_changeDir_invalid_direction():
     levelData = {
-                    "width"     : 5,
-                    "height"    : 5,
-                    "body"  : [(0, 0), (1, 0), (2, 0)],
-                    "food"  : [(2, 1)],
+                    "directions" : {
+                                    "s" : (0, -1),
+                                    "j" : (0,  1),
+                                    "z" : (1, 0),
+                                    "v" : (-1,  0),
+                                    },
+                    "direction" : "j",
                 }
     error = False
     try:
-        move(levelData, "f")
+        changeDir(levelData, "f")
     except ValueError:
         error = True
     assert error == True
+
+def test_changeDir_opossite_direction():
+    levelData = {
+                    "directions" : {
+                                    "s" : (0, -1),
+                                    "j" : (0,  1),
+                                    "z" : (1, 0),
+                                    "v" : (-1,  0),
+                                    },
+                    "direction" : "j",
+                }
+
+    changeDir(levelData, "s")
+    assert levelData["direction"] == "j"
+
+def test_changeDir_succes():
+    levelData = {
+                    "directions" : {
+                                    "s" : (0, -1),
+                                    "j" : (0,  1),
+                                    "z" : (1, 0),
+                                    "v" : (-1,  0),
+                                    },
+                    "direction" : "j",
+                }
+
+    changeDir(levelData, "v")
+    assert levelData["direction"] == "v"
+
 
 def test_move_invalid_index():
-    levelData = {
-                    "width"     : 5,
-                    "height"    : 5,
-                    "body"  : [(0, 0), (1, 0), (2, 0)],
-                    "food"  : [(2, 1)],
-                }
-    error = False
-    try:
-        move(levelData, "s")
-    except ValueError:
-        error = True
-    assert error == True
+    data = []
+    data.append({
+                    "width"     : 3,
+                    "height"    : 3,
+                    "body"      : [(0, 0), (1, 0), (2, 0)],
+                    "direction" : "z",
+                    "directions" : {
+                                    "s" : (0, -1),
+                                    "j" : (0,  1),
+                                    "z" : (1, 0),
+                                    "v" : (-1, 0),
+                            }
+                })
+
+    data.append({
+                    "width"     : 3,
+                    "height"    : 3,
+                    "body"      : [(2, 0), (1, 0), (0, 0)],
+                    "direction" : "v",
+                    "directions" : {
+                                    "s" : (0, -1),
+                                    "j" : (0,  1),
+                                    "z" : (1, 0),
+                                    "v" : (-1, 0),
+                            }
+                })
+    errors = 0
+    for levelData in data:
+        try:
+            move(levelData)
+        except ValueError:
+            errors += 1
+
+    assert errors == 2
 
 
 def test_genFood_all():
     levelData = {
                     "width"     : 5,
                     "height"    : 5,
-                    "body"  : [(0, 0), (1, 0), (2, 0)],
-                    "food"  : [],
+                    "body"      : [(0, 0), (1, 0), (2, 0)],
+                    "food"      : [],
                 }
     genFood(levelData, 3)
 
@@ -78,8 +134,8 @@ def test_genFood_not_enough_room():
     levelData = {
                     "width"     : 4,
                     "height"    : 2,
-                    "body"  : [(0, 0), (1, 0), (2, 0), (3,0), (3, 1), (2, 1), (1, 1)],
-                    "food"  : [],
+                    "body"      : [(0, 0), (1, 0), (2, 0), (3,0), (3, 1), (2, 1), (1, 1)],
+                    "food"      : [],
                 }
     genFood(levelData, 3)
 

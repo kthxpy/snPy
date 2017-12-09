@@ -46,8 +46,8 @@ def keyDown():
             ch = ord(getch())
         return ch
 
-def onKeyDown(key, levelData):
-    
+def onKeyDown(levelData, key):
+
     if key == levelData["keys"]["left"]:
         levelData["direction"] = "v"
     elif key == levelData["keys"]["up"]:
@@ -57,7 +57,7 @@ def onKeyDown(key, levelData):
     elif key == levelData["keys"]["down"]:
         levelData["direction"] = "j"
     return
-    
+
 def onLevelChange(levelData):
     clear()
     drawLvl(levelData)
@@ -65,33 +65,35 @@ def onLevelChange(levelData):
 
 
 ### GAMELOGIC FUNCTIONS ###
- 
+
 def isOccupied(listOfEntities, x, y):
     for entity in listOfEntities:
         if entity[0] == x and entity[1] == y:
             return True
     return False
 
-def move(levelData, direction):
+def changeDir(levelData, direction):
+    if direction not in levelData["directions"]:
+        raise ValueError("This direction does not exist")
+    else:
+        oldOff = levelData["directions"][levelData["direction"]]
+        newOff = levelData["directions"][direction]
+        print(oldOff, newOff)
+        offSum = abs(oldOff[0] + newOff[0]) + abs(oldOff[1] + newOff[1])
+        # Check for opposite directions (do not want to use them)
+        if offSum > 0:
+            levelData["direction"] = direction
+    return
+
+def move(levelData):
     width = levelData["width"]
     height = levelData["height"]
-    sjvz = [(0,-1), (0,1), (-1, 0), (1, 0)]
     count = len(levelData["body"])
     last = levelData["body"][count -1]
-    dir = ()
+    d = levelData["direction"]
+    offset = levelData["directions"][d]
 
-    if direction == "s":
-        dir = sjvz[0]
-    elif direction == "j":
-        dir = sjvz[1]
-    elif direction == "v":
-        dir = sjvz[2]
-    elif direction == "z":
-        dir = sjvz[3]
-    else:
-        raise ValueError("This direction does not exist")
-
-    entity = (last[0] + dir[0], last[1] + dir[1])
+    entity = (last[0] + offset[0], last[1] + offset[1])
 
     if  not (0 <= entity[0] < width  and 0 <= entity[1] < height):
         print("Entity out of bounds: ", entity)
@@ -114,18 +116,15 @@ def freeSpace(levelData):
     return free
 
 def genFood(levelData, amount):
-
     while freeSpace(levelData) and amount:
         randX = randrange(0, levelData["width"])
         randY = randrange(0, levelData["height"])
 
         bite = (randX, randY)
-
         if bite not in levelData["body"] and bite not in levelData["food"]:
             levelData["food"].append(bite)
             amount -= 1
-    onLevelChange(levelData) 
-
+    onLevelChange(levelData)
     return
 
 def lvlTick(levelData):
@@ -137,7 +136,7 @@ def lvlTick(levelData):
             levelData["moves"] = 0
     return
 
-    
+
 def run():
     end = False
     levelData = {
@@ -149,31 +148,31 @@ def run():
                     "moves"     : 0,
                     "fRefresh"  : 30,
                     "fAmount"   : 1,
-                    "keys"      : {"esc" : 27, "enter" : 13, "left" : 75, "up": 72, "right": 77, "down": 80},
+                    "keys"      : {
+                                    "esc" : 27, "enter" : 13, "left" : 75,
+                                    "up": 72, "right": 77, "down": 80,
+                                    },
                     "fLimit"    : 15000,
                     "fTicks"    : 0,
+                    "directions" : {
+                                    "s" : (0, -1),
+                                    "j" : (0,  1),
+                                    "z" : (1, 0),
+                                    "v" : (-1,  0),
+                            }
                 }
 
     while not end:
         if kbhit():
             k = keyDown()
-            onKeyDown(k,levelData)    
+            onKeyDown(levelData, k)
         lvlTick(levelData)
         if levelData["fTicks"] > levelData["fLimit"]:
-            move(levelData, levelData["direction"])
+            move(levelData)
             levelData["moves"] += 1
             levelData["fTicks"] = 0
-            onLevelChange(levelData)       
+            onLevelChange(levelData)
         levelData["fTicks"] +=1
     return
-    
+
 run()
-
-
-
-
-
-
-
-
-
