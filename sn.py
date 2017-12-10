@@ -4,20 +4,16 @@ from msvcrt import getch, kbhit
 
 ### CONSOLE SPECIFIC FUNCTIONS ###
 
-def drawLvl(levelData):
+def getLvl(levelData):
     width = levelData["width"]
     height = levelData["height"]
     level = []
-    levelStr = ""
-    xOff = 20
-    yOff = 10
 
     for i in range(height):
         row = []
         for j in range(width):
             row.append(".")
         level.append(row)
-
     for entity in levelData["body"]:
         x = entity[0]
         y = entity[1]
@@ -27,6 +23,14 @@ def drawLvl(levelData):
         x = entity[0]
         y = entity[1]
         level[y][x] = "?"
+    return level
+
+def drawLvl(levelData):
+    width = levelData["width"]
+    height = levelData["height"]
+    xOff = 5
+    yOff = 5
+    level = getLvl(levelData)
 
     print(yOff * "\n", end="")
     for row in level:
@@ -49,13 +53,13 @@ def keyDown():
 def onKeyDown(levelData, key):
 
     if key == levelData["keys"]["left"]:
-        levelData["direction"] = "v"
+        changeDir(levelData, "v")
     elif key == levelData["keys"]["up"]:
-        levelData["direction"] = "s"
+        changeDir(levelData, "s")
     elif key == levelData["keys"]["right"]:
-        levelData["direction"] = "z"
+        changeDir(levelData, "z")
     elif key == levelData["keys"]["down"]:
-        levelData["direction"] = "j"
+        changeDir(levelData, "j")
     return
 
 def onLevelChange(levelData):
@@ -78,7 +82,6 @@ def changeDir(levelData, direction):
     else:
         oldOff = levelData["directions"][levelData["direction"]]
         newOff = levelData["directions"][direction]
-        print(oldOff, newOff)
         offSum = abs(oldOff[0] + newOff[0]) + abs(oldOff[1] + newOff[1])
         # Check for opposite directions (do not want to use them)
         if offSum > 0:
@@ -142,24 +145,25 @@ def run():
     levelData = {
                     "width"     : 10,
                     "height"    : 10,
-                    "body"      : [(0, 0), (1, 0), (2, 0)],
-                    "food"      : [(0,2)],
-                    "direction" : "z",
-                    "moves"     : 0,
-                    "fRefresh"  : 30,
-                    "fAmount"   : 1,
                     "keys"      : {
                                     "esc" : 27, "enter" : 13, "left" : 75,
                                     "up": 72, "right": 77, "down": 80,
                                     },
-                    "fLimit"    : 15000,
-                    "fTicks"    : 0,
+                    "direction" : "z",
                     "directions" : {
                                     "s" : (0, -1),
                                     "j" : (0,  1),
                                     "z" : (1, 0),
                                     "v" : (-1,  0),
-                            }
+                            },
+                    "body"      : [(0, 0), (1, 0), (2, 0)],
+                    "food"      : [(0,2)],
+                    "moves"     : 0,
+                    "fRefresh"  : 30,
+                    "fAmount"   : 1,
+                    "fLimit"    : 9000,
+                    "fTicks"    : 0,
+
                 }
 
     while not end:
