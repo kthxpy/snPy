@@ -1,4 +1,15 @@
-from sn import isOccupied, changeDir, move, genFood
+from sn import isOccupied, getLvl, changeDir, move, genFood
+
+def test_getLvl():
+    levelData = {
+                    "width"     : 4,
+                    "height"    : 2,
+                    "body"      : [(0, 0), (1, 0), (2, 0), (3,0), (3, 1), (2, 1), (1, 1)],
+                    "food"      : [],
+                }
+    state = [["X","X","X","X"],[".","X","X","X"]]
+    lvl = getLvl(levelData)
+    assert lvl == state
 
 def test_isOccupied_Positive():
     listOfEntities = [(0, 0), (1, 0), (2, 0)]
@@ -67,7 +78,7 @@ def test_changeDir_opossite_direction():
     changeDir(levelData, "s")
     assert levelData["direction"] == "j"
 
-def test_changeDir_succes():
+def test_changeDir_success():
     levelData = {
                     "directions" : {
                                     "s" : (0, -1),
